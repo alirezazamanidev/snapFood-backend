@@ -6,7 +6,7 @@ import { SwaggerTheme, SwaggerThemeNameEnum } from 'swagger-themes';
 export default function SwaggerConfig(app: INestApplication) {
   const config = new DocumentBuilder()
     .setTitle('********* SnapFood **********')
-    .setDescription('This SnapFood')
+    .setDescription('This SnapFood Api document')
     .setContact('alireza', null, 'alirezazamanidev80@gmail.com')
     .addSecurity('Authorization', SwaggerAuthConfig())
     .build();
