@@ -14,5 +14,8 @@ namespace NodeJS {
     S3_ACCESS_KEY: string;
     S3_BUCKET_NAME: string;
     S3_ENDPOINT: string;
+    // Jwt Secret key
+    COOKIE_SECRET_KEY: string;
+    OTP_JWT_SECRET_KEY:string
   }
 }

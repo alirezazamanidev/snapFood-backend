@@ -1,11 +1,15 @@
-import { Injectable } from '@nestjs/common';
+import { HttpStatus, Injectable, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntity } from '../user/entities/user.entity';
 import { Repository } from 'typeorm';
 import { OtpEntity } from '../user/entities/otp.entity';
 import { SendOtpDto } from './dto/auth.dto';
 import { randomInt } from 'crypto';
-import { PublicMessage } from 'src/common/enums/messages.enum';
+import { AuthMessage, PublicMessage } from 'src/common/enums/messages.enum';
+import { Response } from 'express';
+import { TokenService } from './token.service';
+import { CookieNames } from 'src/common/enums/cookieNames.enum';
+import { OtpCookieConfig } from 'src/common/utility/cookie.utiliti';
 
 @Injectable()
 export class AuthService {
@@ -13,28 +17,41 @@ export class AuthService {
     @InjectRepository(UserEntity)
     private userRepository: Repository<UserEntity>,
     @InjectRepository(OtpEntity) private otpRepository: Repository<OtpEntity>,
+    private tokenService: TokenService,
   ) {}
 
-  async sendOtp(SendOtpDto: SendOtpDto) {
+  async sendOtp(SendOtpDto: SendOtpDto, res: Response) {
     let { phone } = SendOtpDto;
     let user = await this.userRepository.findOneBy({ phone });
     if (!user) {
       user = this.userRepository.create({ phone });
       user = await this.userRepository.save(user);
     }
-    let otpCode = await this.createOtpForUser(user.id);
-    return {
-      message: PublicMessage.SendOtp,
-      code: otpCode,
-    };
+    // sms code for phone number
+    await this.createOtpForUser(user.id,res);
+
+    
+    return 
+  }
+  async setOtpCookie(userId: number,code:string, res: Response) {
+    const token = await this.tokenService.createOtpToken({ userId });
+    res
+      .cookie(CookieNames.OtpToken, token, OtpCookieConfig)
+      .status(HttpStatus.OK)
+      .json({
+        message: PublicMessage.SendOtp,
+        code
+      });
   }
 
-  async createOtpForUser(userId: number) {
+  async createOtpForUser(userId: number,res:Response) {
     let otp = await this.otpRepository.findOneBy({ userId });
     let code = randomInt(10000, 99999).toString();
     let expires_in = new Date(new Date().getTime() + 2 * 1000 * 60);
     let otpExist = false;
     if (otp) {
+      if (otp.expires_in > new Date())
+        throw new UnauthorizedException(AuthMessage.OtpCodeNotExpired);
       otpExist = true;
       otp.code = code;
       otp.expires_in = expires_in;
@@ -44,7 +61,7 @@ export class AuthService {
     otp = await this.otpRepository.save(otp);
     if (!otpExist)
       await this.userRepository.update({ id: userId }, { otpId: otp.id });
-
+    this.setOtpCookie(userId,code,res)
     return otp.code;
   }
 }
