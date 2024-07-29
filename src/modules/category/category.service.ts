@@ -6,6 +6,8 @@ import { ConflictException, NotFoundException } from '@nestjs/common';
 import { ConflictMessage, NotFoundMessage, PublicMessage } from 'src/common/enums/messages.enum';
 import { S3Service } from '../s3/s3.service';
 import slugify from 'slugify';
+import { PaginationDto } from 'src/common/dto/pagination.dto';
+import { paginationGenerator, paginationSolver } from 'src/common/utility/pagination.utilis';
 
 export class CategoryService {
   constructor(
@@ -47,22 +49,31 @@ export class CategoryService {
     if (category) throw new ConflictException(ConflictMessage.Slug);
     return slug;
   }
-  async findAll(){
+  async findAll(paginationDto:PaginationDto){
+    let {page,limit,skip}=paginationSolver(paginationDto)
     const [categories,count]=await this.categoryRepository.findAndCount({
       where:{},
       relations:{
         parent:true
       },
+      skip,
+      take:limit,
+      
       select:{
         parent:{
           id:true,
           title:true
         }
+      },
+      order:{
+        id:'DESC'
+        
       }
     })
 
     return {
-      categories
+      categories,
+      pagination:paginationGenerator(count,page,limit),
     }
   }
   async findOneById(id:number){
