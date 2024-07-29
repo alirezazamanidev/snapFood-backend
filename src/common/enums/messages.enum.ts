@@ -5,7 +5,8 @@ export enum ConflictMessage {
 }
 
 export enum PublicMessage {
-    Insert='با موفقیت ایجاد شد!'
+    Insert='با موفقیت ایجاد شد!',
+    Updated='با موفقیت ویرایش شد!'
 }
 export enum NotFoundMessage{
     Category='دسته ای یافت نشد!'
