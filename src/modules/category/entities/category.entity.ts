@@ -10,7 +10,7 @@ export class CategoryEntity extends BaseEntity {
     slug:string
     @Column()
     image:string
-    @Column()
+    @Column({default:false})
     show:boolean
     @Column({nullable:true})
     parentId:number
