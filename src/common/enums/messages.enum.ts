@@ -5,12 +5,14 @@ export enum ConflictMessage {
 }
 
 export enum PublicMessage {
+    LoggedIn='با موفقیت وارد شدید',
     Insert='با موفقیت ایجاد شد!',
     Updated='با موفقیت ویرایش شد!',
     SendOtp='کد تایید با موفقیت ارسال شد!'
 }
 export enum NotFoundMessage{
-    Category='دسته ای یافت نشد!'
+    Category='دسته ای یافت نشد!',
+    User='کاربری یافت نشد!'
 }
 export enum AuthMessage {
     OtpCodeNotExpired='کد تایید هنوز منقضی نشده است!',

@@ -17,5 +17,7 @@ namespace NodeJS {
     // Jwt Secret key
     COOKIE_SECRET_KEY: string;
     OTP_JWT_SECRET_KEY:string
+    REFRESH_TOKEN_SECRET_KEY:string
+    ACCESS_TOKEN_SECRET_KEY:string
   }
 }

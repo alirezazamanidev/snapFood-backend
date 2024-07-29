@@ -32,6 +32,8 @@ export class UserEntity extends BaseEntity {
   phone_verify:boolean
   @Column({ nullable: true })
   agentId: number;
+  @Column({nullable:true})
+  hashRt_token:string
   @CreateDateColumn({ type: 'time with time zone' })
   created_at: Date;
   @UpdateDateColumn({ type: 'time with time zone' })

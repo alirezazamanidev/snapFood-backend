@@ -2,6 +2,7 @@ import {
   HttpStatus,
   Inject,
   Injectable,
+  NotFoundException,
   Scope,
   UnauthorizedException,
 } from '@nestjs/common';
@@ -11,12 +12,13 @@ import { Repository } from 'typeorm';
 import { OtpEntity } from '../user/entities/otp.entity';
 import { CheckOtpDto, SendOtpDto } from './dto/auth.dto';
 import { randomInt } from 'crypto';
-import { AuthMessage, PublicMessage } from 'src/common/enums/messages.enum';
+import { AuthMessage, NotFoundMessage, PublicMessage } from 'src/common/enums/messages.enum';
 import { Request, Response } from 'express';
 import { TokenService } from './token.service';
 import { CookieNames } from 'src/common/enums/cookieNames.enum';
 import { OtpCookieConfig } from 'src/common/utility/cookie.utiliti';
 import { REQUEST } from '@nestjs/core';
+import { genSaltSync, hashSync } from 'bcrypt';
 
 @Injectable({ scope: Scope.REQUEST })
 export class AuthService {
@@ -83,7 +85,23 @@ export class AuthService {
       throw new UnauthorizedException(AuthMessage.ExpiredOtp);
     await this.userRepository.update({id:userId},{phone_verify:true});
 
+    const tokens=await this.tokenService.createJwtTokens({userId});
+    await this.updaterefreshToken(userId,tokens.refresh_token);
+    return {
+        message:PublicMessage.LoggedIn,
+        tokens
+    }
     // create tokens
     return 'created tokens'
+  }
+
+  async updaterefreshToken(userId:number,rt:string){
+    const user=await this.userRepository.findOne({where:{id:userId}});
+    if(!user) throw new NotFoundException(NotFoundMessage.User);
+    const salt=genSaltSync(15);
+    const hashRt=hashSync(rt,salt);
+    user.hashRt_token=hashRt;
+    await this.userRepository.save(user);
+    
   }
 }
