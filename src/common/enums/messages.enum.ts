@@ -6,8 +6,11 @@ export enum ConflictMessage {
 
 export enum PublicMessage {
     Insert='با موفقیت ایجاد شد!',
-    Updated='با موفقیت ویرایش شد!'
+    Updated='با موفقیت ویرایش شد!',
+    SendOtp='کد تایید با موفقیت ارسال شد!'
 }
 export enum NotFoundMessage{
     Category='دسته ای یافت نشد!'
+}
+export enum AuthMessage {
 }
