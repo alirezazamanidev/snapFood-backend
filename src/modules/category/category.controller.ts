@@ -1,4 +1,4 @@
-import { Body, Controller, FileTypeValidator, MaxFileSizeValidator, ParseFilePipe, Post, UploadedFile, UseInterceptors } from "@nestjs/common";
+import { Body, Controller, FileTypeValidator, Get, HttpCode, HttpStatus, MaxFileSizeValidator, ParseFilePipe, Post, UploadedFile, UseInterceptors } from "@nestjs/common";
 import { ApiConsumes, ApiTags } from "@nestjs/swagger";
 import { ContentType, SwaggerTags } from "src/common/enums/swagger..enum";
 import { CategoryService } from "./category.service";
@@ -12,7 +12,9 @@ export class CategoryController {
     constructor(private readonly categoryService:CategoryService){}
 
     @UseInterceptors(UploadFileS3('image'))
+    
     @ApiConsumes(ContentType.Multipart)
+    @HttpCode(HttpStatus.CREATED)
     @Post('create')
     create(@Body() CreateCategoryDto:CreateCategoryDto,
     @UploadedFile(
@@ -28,6 +30,11 @@ export class CategoryController {
     ){
         return this.categoryService.create(CreateCategoryDto,image);
 
+    }
+    @HttpCode(HttpStatus.OK)
+    @Get('/list')
+    listOfCategories(){
+        return  this.categoryService.findAll();
     }
 
 }

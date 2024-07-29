@@ -47,6 +47,24 @@ export class CategoryService {
     if (category) throw new ConflictException(ConflictMessage.Slug);
     return slug;
   }
+  async findAll(){
+    const [categories,count]=await this.categoryRepository.findAndCount({
+      where:{},
+      relations:{
+        parent:true
+      },
+      select:{
+        parent:{
+          id:true,
+          title:true
+        }
+      }
+    })
+
+    return {
+      categories
+    }
+  }
   async findOneById(id:number){
     const category=await this.categoryRepository.findOne({where:{id}});
     if(!category) throw new NotFoundException(NotFoundMessage.Category)
