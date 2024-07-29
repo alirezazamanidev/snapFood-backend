@@ -13,5 +13,7 @@ export enum NotFoundMessage{
     Category='دسته ای یافت نشد!'
 }
 export enum AuthMessage {
-    OtpCodeNotExpired='کد تایید هنوز منقضی نشده است!'
+    OtpCodeNotExpired='کد تایید هنوز منقضی نشده است!',
+    ExpiredOtp='کد تایید منقضی شده است لطفا دوباره تلاش کنید!',
+    OtpInCurrent='کد تایید نادرست است!'
 }

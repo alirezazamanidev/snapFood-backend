@@ -29,7 +29,7 @@ export class UserEntity extends BaseEntity {
   @Column({nullable:true})
   otpId: number;
   @Column({default:false})
-  phone_veify:boolean
+  phone_verify:boolean
   @Column({ nullable: true })
   agentId: number;
   @CreateDateColumn({ type: 'time with time zone' })
