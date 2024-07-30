@@ -15,7 +15,7 @@ export class TokenService {
   }
   verifyOtpToken(token: string): Promise<CookieOtpPayload> {
     try {
-      return this.jwtService.verifyAsync(token, {
+      return this.jwtService.verify(token, {
         secret: process.env.OTP_JWT_SECRET_KEY,
       });
     } catch (error) {

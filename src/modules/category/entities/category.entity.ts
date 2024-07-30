@@ -1,6 +1,7 @@
 import { BaseEntity } from "src/common/entity/Base.entity";
 import { EntityName } from "src/common/enums/entityName.enum";
-import { Column, Entity, ManyToOne, OneToMany } from "typeorm";
+import { SupplierEntity } from "src/modules/supplier/entities/supplier.entity";
+import { Column, CreateDateColumn, Entity, ManyToOne, OneToMany, UpdateDateColumn } from "typeorm";
 @Entity(EntityName.Category)
 export class CategoryEntity extends BaseEntity {
 
@@ -20,5 +21,11 @@ export class CategoryEntity extends BaseEntity {
     parent:CategoryEntity
     @OneToMany(()=>CategoryEntity,category=>category.parent)
     children:CategoryEntity[]
+    @OneToMany(()=>SupplierEntity,supplier=>supplier.category)
+    suppliers:SupplierEntity[]
+    @CreateDateColumn()
+    created_at:Date
+    @UpdateDateColumn()
+    updated_at:Date
 
 }
